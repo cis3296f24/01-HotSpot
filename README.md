@@ -15,7 +15,6 @@ nvm use 18.18.0
 
 cd hotspot-events-app
 npm install
-
 npm run dev
 
 open on http://localhost:3000/
