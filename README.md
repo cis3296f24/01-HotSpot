@@ -13,8 +13,9 @@ nvm install 18.18.0 (only need these 2 if your node.js version is old)
 
 nvm use 18.18.0
 
+cd hotspot-events-app
 npm install
 
 npm run dev
 
-open on http://localhost3000/
+open on http://localhost:3000/
