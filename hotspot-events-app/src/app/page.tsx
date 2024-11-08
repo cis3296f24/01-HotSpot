@@ -11,7 +11,6 @@ export default function Home() {
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
 
-
   const [formData, setFormData] = useState({
     eventName: "",
     eventDate: "",
