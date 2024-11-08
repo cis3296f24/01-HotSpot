@@ -44,3 +44,38 @@ nav button {
 .tab-button span {
   @apply text-xs mt-1;
 }
+
+@font-face {
+  font-family: 'firstFont';
+  src: url('/fonts/MARY GOODS.otf');
+}
+
+.welcome-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 12vw;
+  font-weight: 400;
+  z-index: 0;
+  color: #526760;
+  font-family: "firstFont";
+}
+
+@keyframes fadeInShadow {
+  0% {
+    opacity: 0;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+  }
+}
+
+.fade-in-shadow {
+  animation: fadeInShadow 2s ease-in-out;
+}

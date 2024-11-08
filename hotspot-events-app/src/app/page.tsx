@@ -3,6 +3,7 @@ import { FaHome, FaCalendarAlt, FaBell, FaUser } from 'react-icons/fa';
 import { useState } from "react";
 import Registration from './Reg';
 import Search from './searchBar';
+import Link from 'next/link';
 
 export default function Home() {
   const [isRegistered, setIsRegistered] = useState(false);
@@ -35,10 +36,12 @@ export default function Home() {
         </div>
 
         <div className="flex space-x-6">
-          <button className="tab-button">
+          <Link href="/homepage" className="tab-button">
             <FaHome />
             <span>Home</span>
-          </button>
+          </Link>
+
+
           
           <button className="tab-button">
             <FaCalendarAlt />
