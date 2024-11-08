@@ -25,6 +25,9 @@ export default function Search(){
                                         placeholder="Search Events..."
                                         value={searchItem}
                                         onChange={handleSearch}
+                                        onKeyDown={(e) =>{
+                                                if(e.key === "Enter"){onSearch();}
+                                        }}
                                         className="w-2/3 p-2 border rounded-lg text-black "
                                         required
                                 />
