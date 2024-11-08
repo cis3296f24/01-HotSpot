@@ -1,6 +1,7 @@
 "use client";
 import { FaHome, FaCalendarAlt, FaBell, FaUser } from 'react-icons/fa';
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import Registration from './Reg';
 import Search from './searchBar';
@@ -8,12 +9,7 @@ import Link from 'next/link';
 
 export default function Home() {
   const [isRegistered, setIsRegistered] = useState(false);
-
-import { useRouter } from "next/navigation";
-
-export default function Home() {
   const router = useRouter();
-
 
   const [formData, setFormData] = useState({
     eventName: "",
@@ -137,5 +133,4 @@ export default function Home() {
 
     </div>
   );
-}
 }
