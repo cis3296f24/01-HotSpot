@@ -79,3 +79,24 @@ nav button {
 .fade-in-shadow {
   animation: fadeInShadow 2s ease-in-out;
 }
+
+.gradient-bg {
+  background: linear-gradient(135deg, #edeced, #ee9a40);
+  background-size: 200% 200%;
+  animation: gradientAnimation 6s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hover-gradient {
+  background: linear-gradient(90deg, #ee9a40, #FF7870);
+  transition: background 0.4s ease;
+}
+.hover-gradient:hover {
+  background: linear-gradient(90deg, #394d42, #8a9e97);
+}
+

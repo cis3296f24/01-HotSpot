@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "hotspot-2710a",
+    "Hotspot": "hotspot-2710a"
+  },
+  "targets": {},
+  "etags": {}
+}
