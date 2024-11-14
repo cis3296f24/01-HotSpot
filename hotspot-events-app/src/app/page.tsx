@@ -90,7 +90,7 @@ export default function Home() {
           <h1 className="text-6xl font-bold ml-5">Welcome to HOTSPOT</h1>
           <Search />
         </div>
-        
+      <EventCatalog />
 
       </main>
     </div>
