@@ -3,8 +3,11 @@
 import { FaHome, FaCalendarAlt, FaBell, FaUser } from 'react-icons/fa';
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Registration from "../Reg";
+import NavBar from "@/app/NavBar";
 
 export default function Profile() {
+  const [isRegistered, setIsRegistered] = useState(false);
   const [name, setName] = useState("");
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -28,54 +31,67 @@ export default function Profile() {
     console.log("Profile Picture:", profilePicture);
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold mb-4">Profile Page</h1>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-md space-y-4">
-        
-        {/* Name Input */}
-        <div>
-          <label className="block text-gray-700">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={handleNameChange}
-            className="w-full p-2 border border-gray-300 rounded text-black"
-            placeholder="Enter your name"
-            required
-          />
-        </div>
-        
-        {/* Profile Picture Input */}
-        <div>
-          <label className="block text-gray-700">Profile Picture</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
+  const handleRegistrationComplete = () => {
+    setIsRegistered(true);  // Update state to show profile page
+  };
 
-        {/* Preview Image */}
-        {preview && (
-          <div className="mt-4">
-            <img
-              src={preview}
-              alt="Profile Preview"
-              className="w-32 h-32 object-cover rounded-full mx-auto"
+  // Render the Registration component if the user is not registered
+  if (!isRegistered) {
+    return <Registration onRegister={handleRegistrationComplete} />;
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <NavBar /> {/* Keep NavBar at the top */}
+
+      <div className="flex flex-col items-center justify-center flex-grow"> {/* Center content */}
+        <h1 className="text-4xl font-bold mb-4">Profile Page</h1>
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-md space-y-4">
+          
+          {/* Name Input */}
+          <div>
+            <label className="block text-gray-700">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={handleNameChange}
+              className="w-full p-2 border border-gray-300 rounded text-black"
+              placeholder="Enter your name"
+              required
             />
           </div>
-        )}
+          
+          {/* Profile Picture Input */}
+          <div>
+            <label className="block text-gray-700">Profile Picture</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600 transition duration-200"
-        >
-          Save Profile
-        </button>
-      </form>
+          {/* Preview Image */}
+          {preview && (
+            <div className="mt-4">
+              <img
+                src={preview}
+                alt="Profile Preview"
+                className="w-32 h-32 object-cover rounded-full mx-auto"
+              />
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600 transition duration-200"
+          >
+            Save Profile
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
