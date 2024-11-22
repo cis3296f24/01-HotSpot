@@ -1,5 +1,4 @@
 "use client";
-import React from 'react';
 import { FaHome, FaCalendarAlt, FaBell, FaUser, FaFire } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
