@@ -1,11 +1,11 @@
-// src/app/eventsCatalog/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { db } from '@/app/firebase';
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { format } from 'date-fns';
-import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaHeart, FaRegHeart } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaHeart, FaRegHeart, FaFire } from 'react-icons/fa';
+import Link from "next/link";
 
 interface Event {
     id: string;
@@ -14,6 +14,7 @@ interface Event {
     eventTime: string;
     eventLocation: string;
     isFavorited?: boolean;
+    trendingCount: number;
 }
 
 export default function EventCatalog() {
@@ -28,9 +29,10 @@ export default function EventCatalog() {
                 const eventsData = querySnapshot.docs.map((doc) => ({
                     id: doc.id,
                     ...doc.data(),
+                    trendingCount: doc.data().trendingCount || 0,
                     isFavorited: false,
                 })) as Event[];
-              
+
                 setEvents(eventsData);
             } catch (error) {
                 console.error("Error fetching events: ", error);
@@ -50,7 +52,25 @@ export default function EventCatalog() {
         );
     };
 
-        //helper functions for better formatting using date-fns
+    const handleTrendingClick = async (eventId: string) => {
+        setEvents((prevEvents) => {
+            const updatedEvents = prevEvents.map((event) => {
+                if (event.id === eventId) {
+                    const updatedEvent = { ...event, trendingCount: event.trendingCount + 1 };
+                    updateDoc(doc(db, "events", eventId), {
+                        trendingCount: updatedEvent.trendingCount,
+                    }).catch((error) => {
+                        console.error("Error updating trending count: ", error);
+                    });
+                    return updatedEvent;
+                }
+                return event;
+            });
+            return updatedEvents;
+        });
+    };
+
+    // Helper functions for better formatting using date-fns
     function formatDate(dateStr: string) {
         const date = new Date(dateStr);
         return format(date, 'MMMM d, yyyy');
@@ -80,7 +100,7 @@ export default function EventCatalog() {
 
             {loading ? (
                 <div className="flex justify-center items-center h-40">
-                    <p className="text-gray-500">Loading events...</p>
+                    <p className="text-[#3D52A0]">Loading events...</p>
                 </div>
             ) : events.length === 0 ? (
                 <p className="text-center text-lg font-medium text-gray-600">
@@ -91,7 +111,7 @@ export default function EventCatalog() {
                     {sortedEvents.map((event) => (
                         <div
                             key={event.id}
-                            className="event-card min-w-[200px] bg-[#e2dbe8] shadow-lg rounded-xl p-6 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl"
+                            className="event-card min-w-[200px] bg-[#e2dbe8] shadow-lg rounded-xl p-6 relative transition-all duration-300 ease-in-out pb-8 transform hover:scale-105 hover:shadow-2xl"
                         >
                             {/* Header with Icon */}
                             <div className="flex items-center justify-between mb-4">
@@ -99,13 +119,12 @@ export default function EventCatalog() {
                                     {event.eventName}
                                 </h3>
 
-                                {/* Favorite Button with Debugging Styles */}
-                                <button 
-                                    onClick={() => toggleFavorite(event.id)}>
+                                {/* Favorite Button */}
+                                <button onClick={() => toggleFavorite(event.id)}>
                                     {event.isFavorited ? (
-                                    <FaHeart className="text-[#ee9a40] text-xl" />
+                                        <FaHeart className="text-[#ee9a40] text-xl" />
                                     ) : (
-                                    <FaRegHeart className="text-gray-400 text-xl" />
+                                        <FaRegHeart className="text-gray-400 text-xl" />
                                     )}
                                 </button>
                             </div>
@@ -125,8 +144,21 @@ export default function EventCatalog() {
 
                             {/* Button to View Details */}
                             <div className="mt-4">
-                            <button className="card-text w-full py-2 text-white rounded-full hover-gradient">
-                                    View Details
+                                <Link href={`/events/${event.id}`}>
+                                    <button className="card-text w-full py-2 text-white rounded-full hover-gradient">
+                                        View Details
+                                    </button>
+                                </Link>
+                            </div>
+
+                            {/* Trending - Fire Icon for trending events */}
+                            <div className="absolute bottom-2 left-2 flex items-center z-10">
+                                <button
+                                    onClick={() => handleTrendingClick(event.id)}
+                                    className={`flex items-center ${event.trendingCount >= 10 ? 'text-red-600 animate-flame' : event.trendingCount >= 5 ? 'text-orange-500 animate-pulse' : 'text-gray-500'}`}
+                                >
+                                    <FaFire className={`transition-all ${event.trendingCount >= 10 ? 'text-red-600' : event.trendingCount >= 5 ? 'text-orange-500' : 'text-gray-500'}`} />
+                                    <span className="ml-2">{event.trendingCount}</span>
                                 </button>
                             </div>
                         </div>

@@ -4,19 +4,19 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #ee9a40;
+  --foreground: #8c9ac1;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #FF7870;
+    --background: #8c9ac1;
     --foreground: #ededed;
   }
 }
 
 body {
   color: var(--foreground);
-  background: linear-gradient(135deg, #b7b8d4, #8c9ac1);
+  background: linear-gradient(135deg, #b7b8d4, #55699b);
   background-size: 200% 200%;
   animation: gradientAnimation 6s ease infinite;
   font-family: Arial, Helvetica, sans-serif;
@@ -102,3 +102,4 @@ nav button {
 .card-text{
   font-family: 'thirdFont', Arial, Helvetica, sans-serif;
 }
+

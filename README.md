@@ -7,11 +7,46 @@ _Bring the world closer together by connecting people to live events._
 For event attendees who are looking to discover more relevant and upcoming experiences, HotSpot is an event-matching application that connects attendees with more relevant events for popular spots in the area. Unlike Eventbrite and other event technology platforms, HotSpot allows users to save favorite locations and be notified when events that fit their interest are posted, better connecting attendees with their ideal event experience.
 
 **Installation Instructions:**
-1. Make sure you are on node.js version >= 18.18.0 (check out this article here https://www.freecodecamp.org/news/how-to-update-node-and-npm-to-the-latest-version/)
-2. Clone the repo into your preferred IDE
-3. In Git Bash, check that your latest version of node.js is correct using
-     npm -v
-5. cd into hotspot-events-app from whereever you saved the repo
-6. Once inside, run the program using
-     npm run dev
-7. Open the local host site after the website has loaded (open http://localhost:3000/ in a new browser)
+
+Ensure Node.js is Updated
+
+Make sure you have Node.js version 18.18.0 or higher installed.
+
+```bash
+  node -v
+```
+If you need to update Node.js, refer to this guide: https://www.freecodecamp.org/news/how-to-update-node-and-npm-to-the-latest-version/
+
+**Clone the Repository**
+
+Clone this repository to your local machine using your preferred IDE or Git tool.
+
+**Verify Node.js Version**
+
+Open Git Bash (or your terminal of choice) and confirm you have the correct version of npm installed by running:
+
+```bash
+  npm -v
+```
+
+**Navigate to the Project Directory**
+
+Use the cd command to change into the project directory (hotspot-events-app) where you cloned the repository:
+
+
+```bash
+  cd hotspot-events-app
+```
+
+**Run the Development Server**
+
+Start the project by running:
+```bash
+  npm run dev
+```
+
+**Open the Application**
+
+Once the server is running, open your web browser and visit:
+
+http://localhost:3000/

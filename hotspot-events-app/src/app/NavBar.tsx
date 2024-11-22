@@ -1,11 +1,10 @@
 "use client";
+import React from 'react';
 import { FaHome, FaCalendarAlt, FaBell, FaUser, FaFire } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function NavBar() {
-  const router = useRouter();
   const [isNotificationOpen, setNotificationOpen] = useState(false);
   const notificationRef = useRef(null);
 
@@ -34,20 +33,21 @@ export default function NavBar() {
       </div>
 
       <div className="flex space-x-6">
+        {/* Replace with Link components */}
         <Link href="/" className="tab-button">
           <FaHome />
           <span>Home</span>
         </Link>
 
-        <button className="tab-button" onClick={() => router.push("/events")}>
+        <Link href="/events" className="tab-button">
           <FaCalendarAlt />
           <span>Events</span>
-        </button>
+        </Link>
 
-        <button className="tab-button" onClick={() => router.push("/hotspots")}>
+        <Link href="/hotspots" className="tab-button">
           <FaFire />
           <span>Hotspots</span>
-        </button>
+        </Link>
 
         <div className="relative" ref={notificationRef}>
           <button className="tab-button" onClick={toggleNotifications}>
@@ -66,10 +66,10 @@ export default function NavBar() {
           )}
         </div>
 
-        <button className="tab-button" onClick={() => router.push("/profile")}>
+        <Link href="/profile" className="tab-button">
           <FaUser />
           <span>Profile</span>
-        </button>
+        </Link>
       </div>
     </nav>
   );
