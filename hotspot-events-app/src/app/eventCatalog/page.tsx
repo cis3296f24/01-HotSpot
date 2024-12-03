@@ -70,7 +70,6 @@ export default function EventCatalog() {
         });
     };
 
-    // Helper functions for better formatting using date-fns
     function formatDate(dateStr: string) {
         const date = new Date(dateStr);
         return format(date, 'MMMM d, yyyy');
@@ -87,6 +86,9 @@ export default function EventCatalog() {
             return -1;
         } else if (!a.isFavorited && b.isFavorited) {
             return 1;
+        } else if (!a.isFavorited && !b.isFavorited) {
+            // Sort non-favorited events by trending count in descending order
+            return b.trendingCount - a.trendingCount;
         } else {
             return 0;
         }
