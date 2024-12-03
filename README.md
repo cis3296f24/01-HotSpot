@@ -6,6 +6,8 @@ _Bring the world closer together by connecting people to live events._
 
 For event attendees who are looking to discover more relevant and upcoming experiences, HotSpot is an event-matching application that connects attendees with more relevant events for popular spots in the area. Unlike Eventbrite and other event technology platforms, HotSpot allows users to save favorite locations and be notified when events that fit their interest are posted, better connecting attendees with their ideal event experience.
 
+Refer to this document for more detailed instructions: https://docs.google.com/document/d/1cTTFOLo4RVzsj74IrQGIyrzPC4reaq1fUQkwJsluItM/edit?tab=t.0
+
 **Installation Instructions:**
 
 Ensure Node.js is Updated
