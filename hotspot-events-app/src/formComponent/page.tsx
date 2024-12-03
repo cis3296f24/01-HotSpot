@@ -15,6 +15,14 @@ interface LocationResult {
   type?: string;
 }
 
+// Define interface for location results
+interface LocationResult {
+  display_name: string;
+  lat?: string;
+  lon?: string;
+  type?: string;
+}
+
 export default function EventCreationForm() {
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
@@ -27,8 +35,28 @@ export default function EventCreationForm() {
     eventDate: "",
     eventTime: "",
     eventLocation: "",
+    isCustomLocation: false,
   });
 
+  const handleLocationSearch = async (query: string) => {
+    if (query.length < 3) {
+      setLocations([]);
+      return;
+    }
+
+    try {
+      // OpenStreetMap Nominatim API, free api. Does not have all the features like Google
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
+      );
+      const data: LocationResult[] = await response.json();
+      setLocations(data.slice(0, 5)); // Limit to 5 results
+    } catch (error) {
+      console.error("Location search error:", error);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const handleLocationSearch = async (query: string) => {
     if (query.length < 3) {
       setLocations([]);
@@ -64,6 +92,16 @@ export default function EventCreationForm() {
     setLocations([]); // Clear suggestions
   };
 
+  const handleLocationChange = (e) => {
+    const value = e.target.value;
+    if (value === "custom") {
+      setFormData((prevData) => ({ ...prevData, eventLocation: "", isCustomLocation: true }));
+    } else {
+      setFormData((prevData) => ({ ...prevData, eventLocation: value, isCustomLocation: false }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Event Details:", formData);
@@ -78,6 +116,7 @@ export default function EventCreationForm() {
         eventDate: "",
         eventTime: "",
         eventLocation: "",
+        isCustomLocation: false,
       });
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -94,6 +133,8 @@ export default function EventCreationForm() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setNotificationOpen(false);
       }
     };
@@ -108,6 +149,8 @@ export default function EventCreationForm() {
   }
 
   return (
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md relative">
+          <h2 className="text-2xl font-semibold text-black">Create an Event</h2>
         <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md relative">
           <h2 className="text-2xl font-semibold text-black">Create an Event</h2>
 
