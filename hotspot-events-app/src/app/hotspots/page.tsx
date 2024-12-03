@@ -1,14 +1,36 @@
 "use client";
 
+import { useState } from "react";
 import NavBar from "@/app/NavBar";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 export default function BlankPage() {
   const hotspots = [
-    { name: "Rittenhouse Square", image: "/images/rittenhouse.jpg" },
-    { name: "The Wall", image: "/images/theWall.jpeg" },
-    { name: "City Hall", image: "/images/cityHall.jpg" },
-    { name: "Bell Tower", image: "/images/bellTower.jpg" },
+    { id: 1, name: "Rittenhouse Square", image: "/images/rittenhouse.jpg" },
+    { id: 2, name: "The Wall", image: "/images/theWall.jpeg" },
+    { id: 3, name: "City Hall", image: "/images/cityHall.jpg" },
+    { id: 4, name: "Bell Tower", image: "/images/bellTower.jpg" },
   ];
+
+  const [likedHotspots, setLikedHotspots] = useState<number[]>([]);
+
+  const toggleLike = (id: number) => {
+    setLikedHotspots((prevLiked) =>
+      prevLiked.includes(id)
+        ? prevLiked.filter((hotspotId) => hotspotId !== id)
+        : [...prevLiked, id]
+    );
+  };
+
+
+  const sortedHotspots = hotspots.sort((a, b) => {
+    const aLiked = likedHotspots.includes(a.id);
+    const bLiked = likedHotspots.includes(b.id);
+
+    if (aLiked && !bLiked) return -1;
+    if (!aLiked && bLiked) return 1;
+    return 0;
+  });
 
   return (
     <div className="flex flex-col min-h-screen text-gray-900">
@@ -45,6 +67,18 @@ export default function BlankPage() {
               >
                 {hotspot.name}
               </h2>
+
+              <button
+                onClick={() => toggleLike(hotspot.id)}
+                className="absolute top-4 right-4"
+              >
+                {likedHotspots.includes(hotspot.id) ? (
+                  <FaHeart className="text-red-500 text-2xl" />
+                ) : (
+                  <FaRegHeart className="text-gray-300 text-2xl" />
+                )}
+              </button>
+
             </div>
           </div>
         ))}
