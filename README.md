@@ -8,6 +8,10 @@ For event attendees who are looking to discover more relevant and upcoming exper
 
 **Installation Instructions:**
 
+Make sure homebrew is installed
+
+https://brew.sh/
+
 Ensure Node.js is Updated
 
 Make sure you have Node.js version 18.18.0 or higher installed.
