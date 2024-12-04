@@ -27,8 +27,15 @@ export default function EventCreationForm() {
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
   const [isNotificationOpen, setNotificationOpen] = useState(false);
-  const notificationRef = useRef<HTMLDivElement>(null);
-  const [locations, setLocations] = useState<LocationResult[]>([]);
+  const notificationRef = useRef(null);
+
+  const hotspotLocations = [
+    "Rittenhouse Square",
+    "The Wall",
+    "City Hall",
+    "Bell Tower",
+  ];
+
 
   const [formData, setFormData] = useState({
     eventName: "",
@@ -78,18 +85,6 @@ export default function EventCreationForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    
-    if (name === "eventLocation") {
-      handleLocationSearch(value);
-    }
-  };
-
-  const selectLocation = (location: LocationResult) => {
-    setFormData(prev => ({
-      ...prev,
-      eventLocation: location.display_name
-    }));
-    setLocations([]); // Clear suggestions
   };
 
   const handleLocationChange = (e) => {
@@ -193,28 +188,33 @@ export default function EventCreationForm() {
 
           <div>
             <label className="block text-gray-700">Event Location</label>
-            <input
-              type="text"
+            <select
               name="eventLocation"
-              value={formData.eventLocation}
-              onChange={handleChange}
+              value={formData.isCustomLocation ? "custom" : formData.eventLocation}
+              onChange={handleLocationChange}
               required
               className="w-full p-2 border border-gray-300 rounded text-black"
-              placeholder="Enter location"
-            />
-            {locations.length > 0 && (
-              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded text-black mt-1 shadow-lg">
-                {locations.map((location, index) => (
-                  <div 
-                    key={index} 
-                    onClick={() => selectLocation(location)}
-                    className="p-2 text-black hover:bg-indigo-300 cursor-pointer"
-                  >
-                    {location.display_name}
-                  </div>
-                ))}
-              </div>
-            )}
+            >
+            <option value="" disabled>Select a location</option>
+              {hotspotLocations.map((location, index) => (
+                <option key={index} value={location}>
+                  {location}
+                </option>
+              ))}
+            <option value="custom">Enter a custom location</option>
+            </select>
+
+            {formData.isCustomLocation && (
+          <input
+            type="text"
+            name="eventLocation"
+            value={formData.eventLocation}
+            onChange={handleChange}
+            required
+            className="w-full p-2 mt-2 border border-gray-300 rounded text-black"
+            placeholder="Enter custom location"
+          />
+        )}
           </div>
 
           <button
