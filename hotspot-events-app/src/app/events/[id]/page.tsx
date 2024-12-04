@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { db } from "@/app/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaArrowLeft } from "react-icons/fa";
+import Timer from "@/app/components/Timer";
+
 
 // OpenLayer API stuff
 import "ol/ol.css";
@@ -115,6 +117,16 @@ export default function EventDetails() {
     };
   }, [coordinates]);
 
+  const handleOpenGoogleMaps = () => {
+    if (coordinates) {
+      const [lon, lat] = coordinates; 
+      const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+      window.open(mapsUrl, '_blank');
+    } else {
+      alert("Coordinates for the event location are not available.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -167,6 +179,7 @@ export default function EventDetails() {
     alert('Please open the downloaded .ics file to add the event to your calendar!');
   };
 
+  const eventDateTime = `${event.eventDate}T${event.eventTime}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-400 animate-gradient-flow bg-gradient-size flex flex-col items-center justify-center p-6 shadow-2xl">
@@ -209,7 +222,20 @@ export default function EventDetails() {
             </div>
           </div>
         </div>
+        <div>
+        {/* Countdown Timer */}
+        <Timer eventDateTime={eventDateTime} />
+        </div>
 
+        {/*Google Maps Button */}
+        <div className="w-full bg-white py-6 px-8 flex justify-center">
+          <button
+            onClick={handleOpenGoogleMaps}
+            className="hover-gradient py-3 px-6 rounded-lg text-lg font-semibold transition"
+          >
+            Get Directions on Google Maps
+          </button>
+        </div>
         {/* Add to Calendar Section */}
         <div className="w-full bg-gradient-to-r from-[#3D52A0] to-[#7091E6] text-white py-6 px-8">
           <h2 className="text-2xl welcome-text mb-2">Get Ready for the Event!</h2>
