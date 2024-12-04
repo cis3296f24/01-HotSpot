@@ -1,5 +1,3 @@
-//Form Component
-
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -9,12 +7,20 @@ import Registration from '@/app/Reg';
 import { db } from '@/app/firebase';
 import { collection, addDoc } from "firebase/firestore";
 
+// Define interface for location results
+interface LocationResult {
+  display_name: string;
+  lat?: string;
+  lon?: string;
+  type?: string;
+}
+
 export default function EventCreationForm() {
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
   const [isNotificationOpen, setNotificationOpen] = useState(false);
-  const notificationRef = useRef(null);
-
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const [locations, setLocations] = useState<LocationResult[]>([]);
 
   const [formData, setFormData] = useState({
     eventName: "",
@@ -23,12 +29,42 @@ export default function EventCreationForm() {
     eventLocation: "",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  const handleLocationSearch = async (query: string) => {
+    if (query.length < 3) {
+      setLocations([]);
+      return;
+    }
+
+    try {
+      // OpenStreetMap Nominatim API, free api. Does not have all the features like Google
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
+      );
+      const data: LocationResult[] = await response.json();
+      setLocations(data.slice(0, 5)); // Limit to 5 results
+    } catch (error) {
+      console.error("Location search error:", error);
+    }
   };
 
-  const handleSubmit = async (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    
+    if (name === "eventLocation") {
+      handleLocationSearch(value);
+    }
+  };
+
+  const selectLocation = (location: LocationResult) => {
+    setFormData(prev => ({
+      ...prev,
+      eventLocation: location.display_name
+    }));
+    setLocations([]); // Clear suggestions
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Event Details:", formData);
 
@@ -56,8 +92,8 @@ export default function EventCreationForm() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setNotificationOpen(false);
       }
     };
@@ -72,8 +108,8 @@ export default function EventCreationForm() {
   }
 
   return (
-        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-          <h2 className="text-2xl font-semibold text-gray-800">Create an Event</h2>
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md relative">
+          <h2 className="text-2xl font-semibold text-black">Create an Event</h2>
 
           <div>
             <label className="block text-gray-700">Event Name</label>
@@ -123,6 +159,19 @@ export default function EventCreationForm() {
               className="w-full p-2 border border-gray-300 rounded text-black"
               placeholder="Enter location"
             />
+            {locations.length > 0 && (
+              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded text-black mt-1 shadow-lg">
+                {locations.map((location, index) => (
+                  <div 
+                    key={index} 
+                    onClick={() => selectLocation(location)}
+                    className="p-2 text-black hover:bg-indigo-300 cursor-pointer"
+                  >
+                    {location.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <button
