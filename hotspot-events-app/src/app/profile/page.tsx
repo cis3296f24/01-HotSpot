@@ -1,18 +1,37 @@
 // src/app/profile/page.tsx
 "use client";
 import { FaHome, FaCalendarAlt, FaBell, FaUser } from 'react-icons/fa';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Registration from "../Reg";
+import Registration from "@/app/register/page";
 import NavBar from "@/app/NavBar";
 import { db, auth } from "@/app/firebase";
+import { onAuthStateChanged, updateProfile, signOut } from "firebase/auth";
 
 export default function Profile() {
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [IsAuthenticated, setIsAuthenticated] = useState(false);
   const [name, setName] = useState("");
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const storedPicture = sessionStorage.getItem("profilePicture");
+    if (storedPicture) {
+      setPreview(storedPicture); // Set the preview if the image was stored in the session
+    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true); // User is logged in
+        setName(user.displayName || "");
+      } else {
+        setIsAuthenticated(false); // User is not logged in
+        router.push("/register"); 
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -22,29 +41,36 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (file) {
       setProfilePicture(file);
-      setPreview(URL.createObjectURL(file));
+
+      const filePreview = URL.createObjectURL(file);
+      setPreview(filePreview);
+      sessionStorage.setItem("profilePicture", filePreview); 
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add server/API send
+    // Handle saving data
     console.log("User Name:", name);
     console.log("Profile Picture:", profilePicture);
   };
-  
-  const handleRegistrationComplete = () => {
-    setIsRegistered(true);
-  };
 
-  // Render the Registration component if the user is not registered
-  if (!isRegistered) {
-    return <Registration onRegister={handleRegistrationComplete} />;
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth); // Firebase sign-out
+      router.push("/register"); // Redirect to login page after sign-out
+    } catch (error) {
+      console.error("Sign out error: ", error);
+    }
+  };
+  
+  if (!IsAuthenticated) {
+    return null; // Prevent rendering while checking auth state
   }
 
   return (
     <div className="flex flex-col min-h-screen">
-      <NavBar /> 
+      <NavBar />
 
       <div className="flex flex-col items-center justify-center flex-1">
         <h1 className="text-4xl font-bold mb-4">Profile Page</h1>
@@ -93,6 +119,16 @@ export default function Profile() {
             Save Profile
           </button>
         </form>
+
+        {/* Sign Out Button */}
+        <div className="mt-4">
+          <button
+            onClick={handleSignOut}
+            className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition duration-200"
+          >
+            Sign Out
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
+"use client";
+
 import React, {useState} from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@/app/firebase";
-import { auth } from "@/app/firebase"
+import { auth, setPersistence, browserSessionPersistence } from "@/app/firebase"
 
 // props interface
 interface RegistrationProps {
@@ -27,14 +29,16 @@ export default function Registration({ onRegister }: RegistrationProps) {
           setError(null);
       
           try {
+
+            await setPersistence(auth, browserSessionPersistence);
             if (isSigningIn) {
               // Sign in with Firebase Authentication
               await signInWithEmailAndPassword(auth, email, password);
-              onRegister(); // Notify parent component
+              onRegister();
             } else {
               // Sign up with Firebase Authentication
               await createUserWithEmailAndPassword(auth, email, password);
-              onRegister(); // Notify parent component
+              onRegister(); 
             }
           } catch (err: any) {
             if (err.code === "auth/user-not-found") {

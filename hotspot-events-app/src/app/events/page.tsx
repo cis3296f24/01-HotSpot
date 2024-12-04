@@ -4,7 +4,7 @@
 import { useState } from "react"; 
 import NavBar from "@/app/NavBar"; 
 import { useRouter } from "next/navigation";
-import Registration from '@/app/Reg';
+import Registration from '@/app/register/page';
 
 //Firebase
 import { db } from '@/app/firebase';

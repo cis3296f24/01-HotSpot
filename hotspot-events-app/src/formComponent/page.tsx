@@ -3,7 +3,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Registration from '@/app/Reg';
+import Registration from '@/app/register/page';
 
 //Firebase
 import { db } from '@/app/firebase';
