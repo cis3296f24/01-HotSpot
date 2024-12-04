@@ -15,34 +15,19 @@ interface LocationResult {
   type?: string;
 }
 
-// Define interface for location results
-interface LocationResult {
-  display_name: string;
-  lat?: string;
-  lon?: string;
-  type?: string;
-}
-
 export default function EventCreationForm() {
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
   const [isNotificationOpen, setNotificationOpen] = useState(false);
-  const notificationRef = useRef(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
-  const hotspotLocations = [
-    "Rittenhouse Square",
-    "The Wall",
-    "City Hall",
-    "Bell Tower",
-  ];
-
+  const [locations, setLocations] = useState<LocationResult[]>([]);
 
   const [formData, setFormData] = useState({
     eventName: "",
     eventDate: "",
     eventTime: "",
     eventLocation: "",
-    isCustomLocation: false,
   });
 
   const handleLocationSearch = async (query: string) => {
@@ -52,26 +37,6 @@ export default function EventCreationForm() {
     }
 
     try {
-      // OpenStreetMap Nominatim API, free api. Does not have all the features like Google
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
-      );
-      const data: LocationResult[] = await response.json();
-      setLocations(data.slice(0, 5)); // Limit to 5 results
-    } catch (error) {
-      console.error("Location search error:", error);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const handleLocationSearch = async (query: string) => {
-    if (query.length < 3) {
-      setLocations([]);
-      return;
-    }
-
-    try {
-      // OpenStreetMap Nominatim API, free api. Does not have all the features like Google
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
       );
@@ -85,18 +50,20 @@ export default function EventCreationForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleLocationChange = (e) => {
-    const value = e.target.value;
-    if (value === "custom") {
-      setFormData((prevData) => ({ ...prevData, eventLocation: "", isCustomLocation: true }));
-    } else {
-      setFormData((prevData) => ({ ...prevData, eventLocation: value, isCustomLocation: false }));
+    
+    if (name === "eventLocation") {
+      handleLocationSearch(value);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const selectLocation = (location: LocationResult) => {
+    setFormData(prev => ({
+      ...prev,
+      eventLocation: location.display_name
+    }));
+    setLocations([]); // Clear suggestions
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Event Details:", formData);
@@ -111,7 +78,6 @@ export default function EventCreationForm() {
         eventDate: "",
         eventTime: "",
         eventLocation: "",
-        isCustomLocation: false,
       });
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -127,12 +93,15 @@ export default function EventCreationForm() {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+      if (
+        notificationRef.current && 
+        event.target instanceof Node &&
+        !notificationRef.current.contains(event.target)
+      ) {
         setNotificationOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -145,8 +114,13 @@ export default function EventCreationForm() {
 
   return (
         <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md relative">
-          <h2 className="text-2xl font-semibold text-black">Create an Event</h2>
-        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md relative">
+          <div 
+            ref={notificationRef}
+            className="relative"
+          >
+            {/* Notification-related content can go here if needed */}
+          </div>
+
           <h2 className="text-2xl font-semibold text-black">Create an Event</h2>
 
           <div>
@@ -188,33 +162,28 @@ export default function EventCreationForm() {
 
           <div>
             <label className="block text-gray-700">Event Location</label>
-            <select
+            <input
+              type="text"
               name="eventLocation"
-              value={formData.isCustomLocation ? "custom" : formData.eventLocation}
-              onChange={handleLocationChange}
+              value={formData.eventLocation}
+              onChange={handleChange}
               required
               className="w-full p-2 border border-gray-300 rounded text-black"
-            >
-            <option value="" disabled>Select a location</option>
-              {hotspotLocations.map((location, index) => (
-                <option key={index} value={location}>
-                  {location}
-                </option>
-              ))}
-            <option value="custom">Enter a custom location</option>
-            </select>
-
-            {formData.isCustomLocation && (
-          <input
-            type="text"
-            name="eventLocation"
-            value={formData.eventLocation}
-            onChange={handleChange}
-            required
-            className="w-full p-2 mt-2 border border-gray-300 rounded text-black"
-            placeholder="Enter custom location"
-          />
-        )}
+              placeholder="Enter location"
+            />
+            {locations.length > 0 && (
+              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded text-black mt-1 shadow-lg">
+                {locations.map((location, index) => (
+                  <div 
+                    key={index} 
+                    onClick={() => selectLocation(location)}
+                    className="p-2 text-black hover:bg-indigo-300 cursor-pointer"
+                  >
+                    {location.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <button
