@@ -54,17 +54,23 @@ export default function NavBar() {
             <span>Notifications</span>
           </button>
           {isNotificationOpen && (
-            <div className="absolute top-full right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4">
-              <p className="text-lg font-semibold">Alerts</p>
-              <ul className="space-y-2 mt-2">
-                <li className="text-sm text-gray-600">New event scheduled for tomorrow</li>
-                <li className="text-sm text-gray-600">Event location changed</li>
-                <li className="text-sm text-gray-600">Reminder: RSVP to upcoming event</li>
-              </ul>
-            </div>
-          )}
+              <div
+                className="absolute top-full w-80 right-0 bg-white shadow-lg rounded-lg p-2"
+                style={{
+                  marginTop: '-4px', // Pulls the dropdown closer to the button
+                  paddingTop: '4px', // Minimal padding inside the dropdown
+                  paddingBottom: '4px',
+                }}
+              >
+                <p className="text-md font-semibold mb-1">Alerts</p>
+                <ul className="space-y-1">
+                  <li className="text-sm text-gray-600 leading-tight">New event scheduled for tomorrow</li>
+                  <li className="text-sm text-gray-600 leading-tight">Event location changed</li>
+                  <li className="text-sm text-gray-600 leading-tight">Reminder: RSVP to upcoming event</li>
+                </ul>
+              </div>
+            )}
         </div>
-
         <Link href="/profile" className="tab-button">
           <FaUser />
           <span>Profile</span>
