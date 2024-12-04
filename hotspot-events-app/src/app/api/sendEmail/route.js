@@ -22,7 +22,7 @@ export async function POST(req) {
       const resendAPI = new Resend('re_4qREgemo_9RA3kRA5GsCeES3YSHf3Ytne');
       const emailResponse = await resendAPI.emails.send({
         from: 'onboarding@resend.dev',
-        to: ['adrewtran117@gmail.com'],
+        to: ['tuo44543@temple.edu'],
         subject: `Hotspot - New Event Created: ${eventName}`,
         text: `Event Details:\n\nName: ${eventName}\nDate: ${eventDate}\nTime: ${eventTime}\nLocation: ${eventLocation}`,
         html: `
