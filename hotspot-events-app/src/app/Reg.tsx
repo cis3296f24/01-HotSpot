@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@/app/firebase";
 import { auth } from "@/app/firebase"
-
 // props interface
 interface RegistrationProps {
   onRegister: () => void; 

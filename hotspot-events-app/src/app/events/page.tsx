@@ -1,10 +1,12 @@
 // src/app/events/page.tsx
 
 "use client";
-import { useState } from "react"; 
+import { useState, useEffect } from "react"; 
 import NavBar from "@/app/NavBar"; 
 import { useRouter } from "next/navigation";
 import Registration from '@/app/Reg';
+import { auth } from "@/app/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 //Firebase
 import { db } from '@/app/firebase';
@@ -20,6 +22,22 @@ export default function Events() {
     eventTime: "",
     eventLocation: "",
   });
+
+  const [isRegistered, setIsRegistered] = useState(false);
+  const router = useRouter();
+
+  // Listen to the authentication state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsRegistered(true); // User is logged in
+      } else {
+        setIsRegistered(false); // User is not logged in
+      }
+    });
+
+    return () => unsubscribe(); // Clean up the listener on unmount
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +91,12 @@ export default function Events() {
       alert("Failed to create event. Please try again.");
     }
   };
+
+   // If the user is not registered (not logged in), show the registration page
+  if (!isRegistered) {
+    return <Registration onRegister={() => setIsRegistered(true)} />;
+  }
+
 
   return (
     <div className="flex flex-col min-h-screen">

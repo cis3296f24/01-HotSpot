@@ -1,18 +1,44 @@
 // src/app/profile/page.tsx
 "use client";
-import { FaHome, FaCalendarAlt, FaBell, FaUser } from 'react-icons/fa';
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Registration from "../Reg";
 import NavBar from "@/app/NavBar";
-import { db, auth } from "@/app/firebase";
+import { auth } from "@/app/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function Profile() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [name, setName] = useState("");
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [isSaved, setIsSaved] = useState(false); 
+  const [saveMessage, setSaveMessage] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        setIsRegistered(true); // Set registration state to true
+      } else {
+        // User is not signed in, redirect to registration/sign-in
+        setIsRegistered(false);
+      }
+    });
+
+    const savedName = sessionStorage.getItem("name");
+    const savedPicture = sessionStorage.getItem("profilePicture");
+
+    if (savedName) {
+       setName(savedName);
+    }
+    if (savedPicture) {
+      setPreview(savedPicture);
+    }
+    return () => unsubscribe(); // Clean up the listener on unmount
+  }, []);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -22,12 +48,32 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (file) {
       setProfilePicture(file);
-      setPreview(URL.createObjectURL(file));
+      const imageURL = URL.createObjectURL(file);
+      setPreview(imageURL);
+
+      
+      // Save the image URL temporarily in sessionStorage
+      sessionStorage.setItem("profilePicture", imageURL);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Save name and profile picture in sessionStorage
+    sessionStorage.setItem("name", name);
+
+    // Show the save confirmation message
+    setSaveMessage("Profile saved successfully!");
+    setIsSaved(true);
+
+    // Clear the confirmation message after a few seconds
+    setTimeout(() => {
+      setSaveMessage("");
+      setIsSaved(false);
+    }, 3000);
+
+
     // Add server/API send
     console.log("User Name:", name);
     console.log("Profile Picture:", profilePicture);
@@ -93,6 +139,12 @@ export default function Profile() {
             Save Profile
           </button>
         </form>
+      {/* Confirmation Message */}
+      {saveMessage && (
+          <div className="mt-4 text-green-500 text-xl font-semibold">
+            {saveMessage}
+          </div>
+        )}
       </div>
     </div>
   );

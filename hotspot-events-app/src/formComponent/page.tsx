@@ -108,9 +108,6 @@ export default function EventCreationForm() {
     };
   }, []);
 
-  if (!isRegistered) {
-    return <Registration onRegister={() => setIsRegistered(true)} />;
-  }
 
   return (
         <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md relative">
