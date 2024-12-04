@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Registration from "../Reg";
 import NavBar from "@/app/NavBar";
 import { auth } from "@/app/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function Profile() {
   const [isRegistered, setIsRegistered] = useState(false);
@@ -83,6 +83,23 @@ export default function Profile() {
     setIsRegistered(true);
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth); // Sign out user
+
+      sessionStorage.removeItem("name");
+      sessionStorage.removeItem("profilePicture");
+
+      setName("");
+      setProfilePicture(null);
+      setPreview(null)
+
+      router.push("/"); // Redirect to homepage after sign out
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   // Render the Registration component if the user is not registered
   if (!isRegistered) {
     return <Registration onRegister={handleRegistrationComplete} />;
@@ -90,15 +107,41 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <NavBar /> 
+      <NavBar />
 
       <div className="flex flex-col items-center justify-center flex-1">
         <h1 className="text-4xl font-bold mb-4">Profile Page</h1>
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-md space-y-4">
-          
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-md space-y-6">
+
+          {/* Profile Picture Preview at the top */}
+          <div className="flex justify-center mb-4">
+            {preview ? (
+              <img
+                src={preview}
+                alt="Profile Preview"
+                className="w-32 h-32 object-cover rounded-full"
+              />
+            ) : (
+              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center text-gray-400">
+                No Image
+              </div>
+            )}
+          </div>
+
+          {/* Profile Picture Input */}
+          <div>
+            <label className="block text-gray-700 mb-2">Change Profile Picture</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+
           {/* Name Input */}
           <div>
-            <label className="block text-gray-700">Name</label>
+            <label className="block text-gray-700 mb-2">Name</label>
             <input
               type="text"
               value={name}
@@ -108,43 +151,31 @@ export default function Profile() {
               required
             />
           </div>
-          
-          {/* Profile Picture Input */}
-          <div>
-            <label className="block text-gray-700">Profile Picture</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
 
-          {/* Preview Image */}
-          {preview && (
-            <div className="mt-4">
-              <img
-                src={preview}
-                alt="Profile Preview"
-                className="w-32 h-32 object-cover rounded-full mx-auto"
-              />
+          {/* Save Confirmation Message */}
+          {saveMessage && (
+            <div className="mt-4 text-green-500 text-xl font-semibold">
+              {saveMessage}
             </div>
           )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600 transition duration-200"
-          >
-            Save Profile
-          </button>
-        </form>
-      {/* Confirmation Message */}
-      {saveMessage && (
-          <div className="mt-4 text-green-500 text-xl font-semibold">
-            {saveMessage}
+          {/* Submit and Sign Out Buttons */}
+          <div className="flex flex-col space-y-4">
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600 transition duration-200"
+            >
+              Save Profile
+            </button>
+
+            <button
+              onClick={handleSignOut}
+              className="w-full bg-red-500 text-white font-bold py-2 rounded hover:bg-red-600 transition duration-200"
+            >
+              Sign Out
+            </button>
           </div>
-        )}
+        </form>
       </div>
     </div>
   );
