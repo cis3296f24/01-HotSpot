@@ -21,13 +21,24 @@ export default function EventCreationForm() {
   const [isNotificationOpen, setNotificationOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
 
+
   const [locations, setLocations] = useState<LocationResult[]>([]);
+
+  const hotspotLocations = [
+    "Rittenhouse Square",
+    "The Wall",
+    "City Hall",
+    "Bell Tower",
+  ];
+
+
 
   const [formData, setFormData] = useState({
     eventName: "",
     eventDate: "",
     eventTime: "",
     eventLocation: "",
+    isCustomLocation: false,
   });
 
   const handleLocationSearch = async (query: string) => {
@@ -65,6 +76,18 @@ export default function EventCreationForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleLocationChange = (e) => {
+    const value = e.target.value;
+    if (value === "custom") {
+      setFormData((prevData) => ({ ...prevData, eventLocation: "", isCustomLocation: true }));
+    } else {
+      setFormData((prevData) => ({ ...prevData, eventLocation: value, isCustomLocation: false }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
     console.log("Event Details:", formData);
 
@@ -78,6 +101,7 @@ export default function EventCreationForm() {
         eventDate: "",
         eventTime: "",
         eventLocation: "",
+        isCustomLocation: false,
       });
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -162,13 +186,13 @@ export default function EventCreationForm() {
 
           <div>
             <label className="block text-gray-700">Event Location</label>
-            <input
-              type="text"
+            <select
               name="eventLocation"
-              value={formData.eventLocation}
-              onChange={handleChange}
+              value={formData.isCustomLocation ? "custom" : formData.eventLocation}
+              onChange={handleLocationChange}
               required
               className="w-full p-2 border border-gray-300 rounded text-black"
+
               placeholder="Enter location"
             />
             {locations.length > 0 && (
@@ -184,6 +208,29 @@ export default function EventCreationForm() {
                 ))}
               </div>
             )}
+
+            >
+            <option value="" disabled>Select a location</option>
+              {hotspotLocations.map((location, index) => (
+                <option key={index} value={location}>
+                  {location}
+                </option>
+              ))}
+            <option value="custom">Enter a custom location</option>
+            </select>
+
+            {formData.isCustomLocation && (
+          <input
+            type="text"
+            name="eventLocation"
+            value={formData.eventLocation}
+            onChange={handleChange}
+            required
+            className="w-full p-2 mt-2 border border-gray-300 rounded text-black"
+            placeholder="Enter custom location"
+          />
+        )}
+
           </div>
 
           <button
