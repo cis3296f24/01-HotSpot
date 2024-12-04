@@ -36,11 +36,13 @@ export default function BlankPage() {
     <div className="flex flex-col min-h-screen text-gray-900">
       <NavBar />
 
-      <div className="flex justify-center items-center mt-8">
+        <div className="flex justify-center items-center mt-8">
         <h1
-          className="text-5xl tracking-wide welcome-text text-[#3D52A0]"
+          className="text-5xl tracking-wide welcome-text text-white"
           style={{
-            
+            textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)', // Adds a black shadow with a subtle blur
+            fontWeight: 'bold', // Makes the text bold
+            letterSpacing: '0.1em', // Adds slight spacing between letters for a modern look
           }}
         >
           HOTSPOTS
