@@ -6,7 +6,7 @@ interface RegistrationProps {
   onRegister: () => void; 
 }
 
-
+//registering new users functions
 export default function Registration({ onRegister }: RegistrationProps) {
         const [email, setEmail] = useState("");
         const [password, setPassword] = useState("");
@@ -27,13 +27,13 @@ export default function Registration({ onRegister }: RegistrationProps) {
       
           try {
             if (isSigningIn) {
-              // Sign in with Firebase Authentication
+              // Firebase auth sign in
               await signInWithEmailAndPassword(auth, email, password);
-              onRegister(); // Notify parent component
+              onRegister(); 
             } else {
-              // Sign up with Firebase Authentication
+              // Sign up 
               await createUserWithEmailAndPassword(auth, email, password);
-              onRegister(); // Notify parent component
+              onRegister(); 
             }
           } catch (err: any) {
             if (err.code === "auth/user-not-found") {
@@ -52,10 +52,11 @@ export default function Registration({ onRegister }: RegistrationProps) {
             console.error("Firebase error:", err.code, err.message);
           }
         };
-      
+
+      // toggle between Sign Up and Sign In
         const toggleMode = () => {
-          setIsSigningIn(!isSigningIn); // Toggle between Sign Up and Sign In
-          setError(null); // Clear errors when switching modes
+          setIsSigningIn(!isSigningIn); 
+          setError(null); 
         };
       
         return (

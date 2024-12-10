@@ -8,6 +8,7 @@ import NavBar from "@/app/NavBar";
 import { auth } from "@/app/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
+//user profile page functions
 export default function Profile() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [name, setName] = useState("");
@@ -17,13 +18,14 @@ export default function Profile() {
   const [saveMessage, setSaveMessage] = useState("");
   const router = useRouter();
 
+  //handle user sign in and registration
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in
-        setIsRegistered(true); // Set registration state to true
+        // signed in
+        setIsRegistered(true); 
       } else {
-        // User is not signed in, redirect to registration/sign-in
+        // not signed in
         setIsRegistered(false);
       }
     });
@@ -37,13 +39,14 @@ export default function Profile() {
     if (savedPicture) {
       setPreview(savedPicture);
     }
-    return () => unsubscribe(); // Clean up the listener on unmount
+    return () => unsubscribe(); 
   }, []);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
+  // save profile information temporarily in sessionStorage
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -51,8 +54,6 @@ export default function Profile() {
       const imageURL = URL.createObjectURL(file);
       setPreview(imageURL);
 
-      
-      // Save the image URL temporarily in sessionStorage
       sessionStorage.setItem("profilePicture", imageURL);
     }
   };
@@ -60,21 +61,20 @@ export default function Profile() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Save name and profile picture in sessionStorage
+    
     sessionStorage.setItem("name", name);
 
-    // Show the save confirmation message
+    //profile confirmation
     setSaveMessage("Profile saved successfully!");
     setIsSaved(true);
 
-    // Clear the confirmation message after a few seconds
     setTimeout(() => {
       setSaveMessage("");
       setIsSaved(false);
     }, 3000);
 
 
-    // Add server/API send
+    // server/API send
     console.log("User Name:", name);
     console.log("Profile Picture:", profilePicture);
   };
@@ -83,9 +83,10 @@ export default function Profile() {
     setIsRegistered(true);
   };
 
+  //signing out
   const handleSignOut = async () => {
     try {
-      await signOut(auth); // Sign out user
+      await signOut(auth); 
 
       sessionStorage.removeItem("name");
       sessionStorage.removeItem("profilePicture");
@@ -94,13 +95,12 @@ export default function Profile() {
       setProfilePicture(null);
       setPreview(null)
 
-      router.push("/"); // Redirect to homepage after sign out
+      router.push("/"); 
     } catch (error) {
       console.error("Error signing out:", error);
     }
   };
 
-  // Render the Registration component if the user is not registered
   if (!isRegistered) {
     return <Registration onRegister={handleRegistrationComplete} />;
   }

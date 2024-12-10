@@ -17,6 +17,7 @@ interface Event {
     trendingCount: number;
 }
 
+//event card functions
 export default function EventCatalog() {
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
