@@ -13,7 +13,7 @@ import { db } from '@/app/firebase';
 import { collection, addDoc } from "firebase/firestore";
 import EventCreationForm from "@/formComponent/page";
 
-
+//create new event page
 export default function Events() {
   const [events, setEvents] = useState([]);
   const [formData, setFormData] = useState({
@@ -26,17 +26,17 @@ export default function Events() {
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
 
-  // Listen to the authentication state
+  //authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setIsRegistered(true); // User is logged in
+        setIsRegistered(true); 
       } else {
-        setIsRegistered(false); // User is not logged in
+        setIsRegistered(false); 
       }
     });
 
-    return () => unsubscribe(); // Clean up the listener on unmount
+    return () => unsubscribe(); 
   }, []);
 
   const handleChange = (e) => {
@@ -44,6 +44,7 @@ export default function Events() {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  //event confirmation email
   const sendEmail = async (eventDetails) => {
     try {
       const response = await fetch("/api/sendEmail", {
@@ -67,7 +68,7 @@ export default function Events() {
     }
   };
   
-
+//submit new event
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Event Details:", formData);
@@ -92,7 +93,7 @@ export default function Events() {
     }
   };
 
-   // If the user is not registered (not logged in), show the registration page
+   // defult to show the registration page if user not logged in
   if (!isRegistered) {
     return <Registration onRegister={() => setIsRegistered(true)} />;
   }
